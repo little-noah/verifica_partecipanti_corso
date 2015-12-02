@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Student;
+use App\Http\Requests\StudentRequest;
 
 class StudentsController extends Controller
 {
@@ -31,7 +32,7 @@ class StudentsController extends Controller
      */
     public function create()
     {
-    	//return view('students.create');
+    	return view('students.create');
     }
 
     /**
@@ -40,9 +41,22 @@ class StudentsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StudentRequest $request)
     {
-        //
+        $input = $request->all();
+		$student = Student::create([
+            'name' => $input['name'],
+            'email' => $input['email'],
+            'telephone' => $input['telephone'],
+        ]);
+		
+		if ($request->ajax() || $request->wantsJson()) {
+    		return new JsonResponse($student);
+    	}
+		
+		flash()->success('salvato con successo!');
+		
+		return redirect('students');
     }
 
     /**
@@ -81,6 +95,7 @@ class StudentsController extends Controller
     	$input = $request->all();
     	$student->update([
     			'name' => $input['name'],
+    			'telephone' => $input['telephone'],
     	]);
     	
     	
